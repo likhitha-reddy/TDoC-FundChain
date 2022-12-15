@@ -35,21 +35,41 @@ contract Charity {
     }
 
     function pay() external payable {
-        if (msg.value < minAmount)
+        if(msg.sender!=charityOwner)
         {
+            if (msg.value < minAmount)
+          {
             revert();
-        }
-        if (isOpen != true)
-        {
+           }
+          if (isOpen != true)
+          {
             revert();
-        }
-        amountCollected += msg.value;
-        donors.push(msg.sender);
-        if (amountCollected >= requiredAmount)
-        {
+          }
+          amountCollected += msg.value;
+          bool contains=false;
+         for (uint256 i=0; i<donors.length; i++)
+         {
+            if(donors[i]==msg.sender)
+            {
+                contains=true;
+            }
+            
+          }
+          if(contains==false)
+          {
+            donors.push(msg.sender);
+
+          }
+        
+        
+          if (amountCollected >= requiredAmount)
+          {
             isOpen = false;
             charityOwner.transfer(address(this).balance);
+          }
+
         }
+        
     }
 
     function getCollectionPercentage() public view returns (uint256) {
